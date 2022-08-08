@@ -27,6 +27,18 @@ class PriceConsumer(
     async def connect(self):
         await self.accept()
 
+    async def disconnect(self, close_code, *args, **kwargs):
+        user: User = self.scope["user"]
+        user_group = await self.get_user_group(user)
+        for group in user_group:
+            company_id = str(group['current_company_id'])
+            group_company_name = f"Company_{company_id}"
+            self.remove_user_to_company(company_id)
+            await self.channel_layer.group_discard(
+                group_company_name,
+                self.channel_name
+            )
+
     @action()
     async def join_company(self, pk, **kwargs):
         logger.info(f"User join company {self.scope['user'].id}")
@@ -73,6 +85,13 @@ class PriceConsumer(
             "current_company__last_price",
             "current_company__updated_at",
         )
+        return list(active_group)
+
+    @database_sync_to_async
+    def get_user_group(self, user):
+        active_group = PriceUser.objects.filter(
+            current_user=user
+        ).values("current_company_id")
         return list(active_group)
 
     @action()
