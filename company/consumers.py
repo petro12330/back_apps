@@ -4,7 +4,7 @@ from decimal import Decimal
 from typing import List
 
 from channels.db import database_sync_to_async
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, AnonymousUser
 from djangochannelsrestframework.consumers import AsyncAPIConsumer
 from djangochannelsrestframework.generics import GenericAsyncAPIConsumer
 from djangochannelsrestframework.observer.generics import (
@@ -29,15 +29,16 @@ class PriceConsumer(
 
     async def disconnect(self, close_code, *args, **kwargs):
         user: User = self.scope["user"]
-        user_group = await self.get_user_group(user)
-        for group in user_group:
-            company_id = str(group['current_company_id'])
-            group_company_name = f"Company_{company_id}"
-            await self.remove_user_to_company(company_id)
-            await self.channel_layer.group_discard(
-                group_company_name,
-                self.channel_name
-            )
+        if not isinstance(user, AnonymousUser):
+            user_group = await self.get_user_group(user)
+            for group in user_group:
+                company_id = str(group['current_company_id'])
+                group_company_name = f"Company_{company_id}"
+                await self.remove_user_to_company(company_id)
+                await self.channel_layer.group_discard(
+                    group_company_name,
+                    self.channel_name
+                )
 
     @action()
     async def join_company(self, pk, **kwargs):
