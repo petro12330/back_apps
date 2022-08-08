@@ -1,0 +1,55 @@
+version: '3'
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+      args:
+        REQUIREMENTS_FILE: "requirements_back.txt"
+        COPY: "."
+    environment:
+        REQUIREMENTS_FILE: requirements.txt
+        HOST_DATABASE: db
+        PORT_DATABASE: 5432
+        HOST_REDIS: redis
+    ports:
+      - "8000:8000"
+    command: bash -c "python manage.py migrate && python manage.py create_initial_users && python manage.py runserver 0.0.0.0:8000"
+    env_file:
+      - .env
+    depends_on:
+      - db
+  db:
+    image: postgres:13.0
+    environment:
+      POSTGRES_PASSWORD: "admin_pass"
+      POSTGRES_USER: "admin"
+      POSTGRES_DB: "local"
+    ports:
+      - "5436:5432"
+  redis:
+    image: redis:5.0.8
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./logs:/log
+      - ./conf:/conf
+  worker_money:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+      args:
+        REQUIREMENTS_FILE: "requirements_worker.txt"
+        COPY: "worker_money.py"
+    environment:
+      REQUIREMENTS_FILE: "requirements_worker.txt"
+      HOST_DATABASE: db
+      PORT_DATABASE: 5432
+      BACK_HOST: backend
+    command: python worker_money.py
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - backend

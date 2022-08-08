@@ -1,0 +1,4 @@
+python-decouple==3.6
+psycopg2-binary==2.9.3
+uvicorn==0.18.2
+websockets==10.3

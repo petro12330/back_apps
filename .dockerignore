@@ -1,0 +1,12 @@
+# Linters
+.mypy_cache
+
+# Virtual environment
+venv
+
+# Environment
+.env
+.env.example
+
+# DB
+db.sqlite3
