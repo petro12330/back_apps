@@ -18,7 +18,7 @@ def generate_movement():
 
 
 def get_data(cursor):
-    cursor.execute("SELECT * FROM company_company;")
+    cursor.execute("SELECT created_at, id, name, last_price, updated_at FROM company_company;")
     return cursor.fetchall()
 
 
