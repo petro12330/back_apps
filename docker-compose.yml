@@ -48,7 +48,7 @@ services:
       HOST_DATABASE: db
       PORT_DATABASE: 5432
       BACK_HOST: backend
-    command: python worker_money.py
+    command: python -u worker_money.py
     env_file:
       - .env
     depends_on:

@@ -14,7 +14,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         admin, create_admin = User.objects.get_or_create(
-            username="admin",  is_superuser=True, is_active=True
+            username="admin", is_superuser=True, is_active=True
         )
         admin.set_password("12345")
         admin.save()
