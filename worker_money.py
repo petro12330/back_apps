@@ -81,7 +81,7 @@ async def apps(scope, receive, send):
                             data[i] = list(price)
                         _, company_id, name, last_price, _ = price
                         change_value = generate_movement()
-                        new_price = last_price + change_value
+                        new_price = int(last_price) + change_value
                         payload_data[company_id] = new_price
                         data[i][-2] = new_price
                     payload["data"] = payload_data
