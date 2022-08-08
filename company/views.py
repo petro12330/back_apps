@@ -15,7 +15,7 @@ class CompanyViewSet(viewsets.ModelViewSet):
     }
 
     queryset = Company.objects.all()
-
+    permission_classes = [IsAuthenticated]
 
     def get_serializer_class(self):
         return self.serializer_classes.get(self.action)
