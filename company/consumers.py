@@ -33,7 +33,7 @@ class PriceConsumer(
         for group in user_group:
             company_id = str(group['current_company_id'])
             group_company_name = f"Company_{company_id}"
-            self.remove_user_to_company(company_id)
+            await self.remove_user_to_company(company_id)
             await self.channel_layer.group_discard(
                 group_company_name,
                 self.channel_name
